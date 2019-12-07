@@ -56,16 +56,23 @@
     </div>
 </body>
 <script>
-$(function(){
-    $.ajax({
-        url:'http://localhost:8080/api/v1/admin/user/info',
-        type:'get',
-        success:function(res){
-            $('.user_info img').attr('src',res.data.userPic);
-            $('.user_info span').html('欢迎&nbsp;&nbsp;'+res.data.nickname)
-            $('user_center_link>1mg').attr('src',res.data.userPic);
-        }
+    //获取用户信息
+    $(function () {
+        $.ajax({
+            url: 'http://localhost:8080/api/v1/admin/user/info',
+            type: 'get',
+            success: function (res) {
+                $('.user_info img').attr('src', res.data.userPic);
+                $('.user_info span').html('欢迎&nbsp;&nbsp;' + res.data.nickname)
+                $('user_center_link>1mg').attr('src', res.data.userPic);
+            }
+        })
     })
-})
+    //点击退出处理
+    $('.logout').on('click', function () {
+        window.localStorage.removeItem('token');
+        window.location.href = './login.html'
+    })
 </script>
+
 </html>
