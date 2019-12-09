@@ -83,7 +83,7 @@
         //图片预览效果
         $('#exampleInputFile').on('change', function (e) {
             let img = this.files[0];
-            let url = URL.createObjectURL(imgFile)
+            let url = URL.createObjectURL(img)
             $('img.user_pic').attr('src', url);
         })
 
