@@ -69,5 +69,19 @@
         </div>
     </div>
 </body>
+<script src="./libs/http.js"></script>
+<script>
+    $(function () {
+        $.get(BigNew.user_detail,function(res){
+            // console.log(res);
+            for(let key in res.data){
+                $('input.'+key).val(res.data[key])
+            }
+            $('img.user_pic').attr('src',res.data.userPic);
+        })
+
+
+    })
+</script>
 
 </html>
