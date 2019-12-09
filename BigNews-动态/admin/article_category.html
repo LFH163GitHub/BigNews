@@ -122,7 +122,6 @@
             } else {
                 $('#exampleModalLabel').text('编辑文章分类')
                 $('#btn-confirm').text('编辑').addClass('btn-primary').removeClass('btn-success');
-                btn = 'edit'
                 // 当弹出编辑的模态框的时候，需要得到一个文章类别id，根据这个id，发送ajax请求获得具体的文章类别信息
                 let cateId = $(dom).attr('data-id');
                 $.get(BigNew.category_search, {
@@ -139,8 +138,56 @@
         })
 
         //当共用一个模态框时最后点击新增或编辑时不同的执行程序
+        // $('#btn-confirm').on('click', function () {
+        //     if ($(this).text() == '新增') {
+        //         let name = $('#recipient-name').val()
+        //         let slug = $('#message-text').val()
+        //         if (name == '' || slug == '') {
+        //             alert('请填写数据')
+        //             return;
+        //         }
+        //         $.post({
+        //             url: BigNew.category_add,
+        //             data: {
+        //                 name: name,
+        //                 slug: slug
+        //             },
+        //             success: function (res) {
+        //                 if (res.code == 201) {
+        //                     $('#myModal').modal('hide')
+        //                     getList();
+        //                 }
+        //             }
+        //         })
+        //     } else if ($(this).text() == '编辑') {
+        //         let name = $('#recipient-name').val()
+        //         let slug = $('#message-text').val()
+        //         let id = $('#cateid').val()
+        //         if (name == '' || slug == '') {
+        //             alert('请填写需要编辑的数据')
+        //             return;
+        //         }
+        //         $('#myModal').modal('hide')
+        //         $.post({
+        //             url: BigNew.category_edit,
+        //             data: {
+        //                 id: id,
+        //                 name: name,
+        //                 slug: slug
+        //             },
+        //             success: function (res) {
+        //                 // console.log(res);
+        //                 if (res.code == 200) {
+        //                     $('#myModal').modal('hide')
+        //                     getList();
+        //                 }
+        //             }
+        //         })
+        //     }
+        // })
+        //第二种的判断条件 直接判断这个按钮是否包含这个类
         $('#btn-confirm').on('click', function () {
-            if ($(this).text() == '新增') {
+            if ($(this).hasClass('btn-success')) {
                 let name = $('#recipient-name').val()
                 let slug = $('#message-text').val()
                 if (name == '' || slug == '') {
@@ -160,7 +207,7 @@
                         }
                     }
                 })
-            } else if ($(this).text() == '编辑') {
+            } else if ($(this).hasClass('btn-primary')) {
                 let name = $('#recipient-name').val()
                 let slug = $('#message-text').val()
                 let id = $('#cateid').val()
