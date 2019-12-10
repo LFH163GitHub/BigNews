@@ -55,7 +55,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
+                    <!-- <tr>
                         <td>王积千造统最头</td>
                         <td>杰克</td>
                         <td>奇趣事</td>
@@ -65,28 +65,95 @@
                             <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
                             <a href="javascript:void(0);" class="btn btn-danger btn-xs delete">删除</a>
                         </td>
-                    </tr>
+                    </tr> -->
                 </tbody>
             </table>
             <div class="row text-center">
+                <ul id="pagination" class="pagination-sm"></ul>
+                <div id="tips">没有数据啦！！</div>
             </div>
         </div>
     </div>
 </body>
 <script src="./libs/http.js"></script>
+<script src="./libs/jquery.twbsPagination.js"></script>
 <!-- 分类列表模板引擎 -->
 <script type="text/html" id="drop-list">
-    <option>所有分类</option>
+    <option value="">所有分类</option>
     {{each $data v}}
     <option>{{v.name}}</option>
     {{/each}}
 </script>
+<!-- 文章条目模板 -->
+<script type="text/html" id="artList">
+    {{each $data.data v}}
+    <tr>
+        <td>{{v.title}}</td>
+        <td>{{v.author}}</td>
+        <td>{{v.category}}</td>
+        <td class="text-center">{{v.date}}</td>
+        <td class="text-center">{{v.state}}</td>
+        <td class="text-center">
+            <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
+            <a href="javascript:void(0);" data-id={{v.id}} class="btn btn-danger btn-xs delete">删除</a>
+        </td>
+    </tr>
+    {{/each}}
+</script>
 <script>
     $(function () {
-         //页面一加载：请求分类列表渲染到下拉菜单
+        //页面一加载：请求分类列表渲染到下拉菜单
         $.get(BigNew.category_list, function (res) {
             let html = template('drop-list', res.data)
             $('#selCategory').html(html)
+        })
+
+
+        // 封装一个获取数据的方法
+        function pageData(pages, callback) {
+            $.get(BigNew.article_query, {
+                page: pages,
+                perpage: perpage,
+                type: $('#selCategory').val(),
+                state: $('#selStatus').val()
+            }, function (res) {
+                let html = template('artList', res.data);
+                $('tbody').html(html)
+                //我们获取到数据之后，我们还需要在这里写代码处理，所以我们使用一个函数，使用回调
+                if (res.data.data.length !=0 && callback != null) {
+                    $('#pagination').show();
+                    $('#tips').hide();
+                    callback(res)
+                }else if(res.data.data.length ===0 ){
+                    $('#pagination').hide();
+                    $('#tips').show();
+                }
+            })
+        }
+
+        //定义两个变量，用来表示页码
+        let mypage = 1;
+        let perpage = 10;
+        //页面一加载就展示文章条目数据
+        pageData(mypage, function (res) {
+            $('#pagination').twbsPagination({
+                totalPages: res.data.totalPage,
+                visiblePages: 6,
+                first: '首页',
+                prev: '上一页',
+                next: '下一页',
+                last: '尾页',
+                onPageClick: function (event, page) {
+                    mypage = page
+                    pageData(mypage, null)
+                }
+            })
+        })
+        $('#btnSearch').on('click',function(e){
+            e.preventDefault();
+            pageData(mypage,function(res){
+                $('#pagination').twbsPagination('changeTotalPages',res.data.totalPage,1)
+            })
         })
     })
 </script>
