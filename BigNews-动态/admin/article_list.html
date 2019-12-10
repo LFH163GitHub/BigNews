@@ -25,16 +25,16 @@
                 <div class="col-xs-6">
                     <form class="form-inline">
                         <select id="selCategory" name="" class="form-control input-sm">
-                            <option value="">所有分类</option>
+                            <!-- <option value="">所有分类</option>
                             <option>未分类</option>
                             <option>奇趣事</option>
                             <option>会生活</option>
-                            <option>爱旅行</option>
+                            <option>爱旅行</option> -->
                         </select>
                         <select id="selStatus" name="" class="form-control input-sm">
-                            <option value="">所有状态</option>
+                            <!-- <option value="">所有状态</option>
                             <option value="草稿">草稿</option>
-                            <option value="已发布">已发布</option>
+                            <option value="已发布">已发布</option> -->
                         </select>
                         <button id="btnSearch" class="btn btn-default btn-sm">筛选</button>
                     </form>
@@ -73,5 +73,22 @@
         </div>
     </div>
 </body>
+<script src="./libs/http.js"></script>
+<!-- 分类列表模板引擎 -->
+<script type="text/html" id="drop-list">
+    <option value="">所有分类</option>
+    {{each $data v}}
+    <option>{{v.name}}</option>
+    {{/each}}
+</script>
+<script>
+    $(function () {
+         //页面一加载：请求分类列表渲染到下拉菜单
+        $.get(BigNew.category_list, function (res) {
+            let html = template('drop-list', res.data)
+            $('#selCategory').html(html)
+        })
+    })
+</script>
 
 </html>
