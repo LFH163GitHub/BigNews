@@ -22,6 +22,8 @@ $('div.level01').on('click',function(){
         $('ul.level02').slideToggle()
         $('ul.level02 li:eq(0) a')[0].click()
         $(this).find('b').toggleClass('rotate0')
+    }else{
+        $('ul.level02').slideUp()
     }
 })
  
