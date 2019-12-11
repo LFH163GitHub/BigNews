@@ -107,15 +107,17 @@
             let html = template('drop-list', res.data)
             $('#selCategory').html(html)
         })
-        
+
+        let valc='' 
+        let vals=''
 
         // 封装一个获取数据的方法
         function pageData(pages, callback) {
             $.get(BigNew.article_query, {
                 page: pages,
                 perpage: perpage,
-                type: $('#selCategory').val(),
-                state: $('#selStatus').val()
+                type: valc,
+                state: vals
             }, function (res) {
                 let html = template('artList', res.data);
                 $('tbody').html(html)
@@ -140,7 +142,7 @@
             })
         }
 
-        //定义两个变量，用来表示页码
+        //定义两个变量，用来表示页码和条数
         let mypage = 1;
         let perpage = 10;
         //页面一加载就展示文章条目数据
@@ -160,6 +162,9 @@
         })
         $('#btnSearch').on('click', function (e) {
             e.preventDefault();
+            valc = $('#selCategory').val();
+            vals = $('#selStatus').val();
+            mypage = 1
             pageData(mypage, function (res) {
                 $('#pagination').twbsPagination('changeTotalPages', res.data.totalPage, 1)
             })
