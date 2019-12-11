@@ -81,7 +81,7 @@
 <script type="text/html" id="drop-list">
     <option value="">所有分类</option>
     {{each $data v}}
-    <option>{{v.name}}</option>
+    <option value="{{v.id}}">{{v.name}}</option>
     {{/each}}
 </script>
 <!-- 文章条目模板 -->
@@ -95,7 +95,7 @@
         <td class="text-center">{{v.state}}</td>
         <td class="text-center">
             <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs">编辑</a>
-            <a href="javascript:void(0);" data-id={{v.id}} class="btn btn-danger btn-xs delete">删除</a>
+            <a href="javascript:void(0);" data-id={{v.id}} class="btn btn-danger btn-xs delete" id="del">删除</a>
         </td>
     </tr>
     {{/each}}
@@ -107,7 +107,7 @@
             let html = template('drop-list', res.data)
             $('#selCategory').html(html)
         })
-
+        
 
         // 封装一个获取数据的方法
         function pageData(pages, callback) {
@@ -119,14 +119,23 @@
             }, function (res) {
                 let html = template('artList', res.data);
                 $('tbody').html(html)
+
                 //我们获取到数据之后，我们还需要在这里写代码处理，所以我们使用一个函数，使用回调
-                if (res.data.data.length !=0 && callback != null) {
+                if ((res.data.data.length != 0 && callback != null)) {
                     $('#pagination').show();
                     $('#tips').hide();
-                    callback(res)
-                }else if(res.data.data.length ===0 ){
-                    $('#pagination').hide();
-                    $('#tips').show();
+                    callback(res);
+                } else if (res.data.data.length === 0) {
+                    if (mypage > 1) {
+                        $('#pagination').twbsPagination('changeTotalPages', res.data.totalPage, mypage -
+                            1)
+                    }else if(mypage == 1){
+                        $('#pagination').twbsPagination('changeTotalPages', res.data.totalPage, mypage)
+                    }else {
+                        $('#pagination').hide();
+                        $('#tips').show();
+                    }
+
                 }
             })
         }
@@ -149,12 +158,28 @@
                 }
             })
         })
-        $('#btnSearch').on('click',function(e){
+        $('#btnSearch').on('click', function (e) {
             e.preventDefault();
-            pageData(mypage,function(res){
-                $('#pagination').twbsPagination('changeTotalPages',res.data.totalPage,1)
+            pageData(mypage, function (res) {
+                $('#pagination').twbsPagination('changeTotalPages', res.data.totalPage, 1)
             })
         })
+
+        //删除数据功能并停留当前页面
+        $('tbody').on('click', '#del', function () {
+            let getid = $(this).attr('data-id');
+            if (confirm('你确定要删除吗！！')) {
+                $.post(BigNew.article_delete, {
+                    id: getid
+                }, function (del) {
+                    pageData(mypage, function (res) {
+                        $('#pagination').twbsPagination('changeTotalPages', res.data
+                            .totalPage, mypage)
+                    })
+                })
+            }
+        })
+
     })
 </script>
 
