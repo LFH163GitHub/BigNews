@@ -12,7 +12,6 @@
     <link rel="stylesheet" href="./admin/libs/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="css/main.css">
     <script type="text/javascript" src="js/jquery-1.12.4.min.js"></script>
-    <script type="text/javascript" src="js/jquery.pagination.min.js"></script>
 </head>
 
 <body>
@@ -58,7 +57,7 @@
     </div>
 
     <div class="main_con clearfix">
-        <div class="left_con setfr">
+        <div class="left_con setfr" id="witer">
 
             <!-- <div class="list_title">
                 <h3>科 技</h3>
@@ -136,9 +135,10 @@
                 </div>
             </div> -->
 
-            <div id="pagination" class="page"></div>
-            <div id="tips"></div>
+            <!-- <div id="pagination" class="page"></div>
+            <div id="tips"></div> -->
         </div>
+        
         <div class="right_con setfl">
             <div class="common_wrap">
                 <h3><i class="fa fa-bar-chart"></i> 一周热门排行</h3>
@@ -200,6 +200,8 @@
                 </ul>
             </div>
         </div>
+        <div id="pagination" class="pagination-sm left_con setfr"></div>
+        <div id="tips left_con setfr"></div>
     </div>
 
     <div class="footer clearfix">
@@ -236,12 +238,14 @@
         </div>
     </div>
     {{/each}}
+    
 </script>
 <!-- 焦点关注  -->
 <script type="text/html" id="guanzhuList">
     {{ each $data v}}
     <li><a href="#">{{v.intro}}</a></li>
     {{/each}}
+   
 </script>
 <!-- 最新评论 -->
 <script type="text/html" id="comList">
@@ -256,6 +260,7 @@
     </li>
     {{/if}}
     {{/each}}
+    
 </script>
 <!-- 文章热门排行 -->
 <script type="text/html" id="hotList">
@@ -302,43 +307,49 @@
         let perpage = 8;
         let text = ''
         let val = ''
-        
-        // function conNewList(pages, callback) {
-        $.get('http://localhost:8080/api/v1/index/search', {
-            type: text,
-            key:val,
-            page: mypage,
-            perpage: perpage
-        }, function (res) {
-            console.log(res);
-            let totalPages = floor(res.data.totalCount/perpage)
-            let html = template('conNewList', res.data.data)
-            $('#pagination').prepend(html);
-            // if ((res.data.data.length != 0 && callback != null)) {
-            //     $('#pagination').show();
-            //     $('#tips').hide();
-            //     callback(res);
-            // } else if (res.data.data.length === 0) {
-            //     if (mypage > 1) {
-            //         $('#pagination').twbsPagination('changeTotalPages', res.data.totalPage, mypage -
-            //             1)
-            //     } else {
-            //         $('#pagination').hide();
-            //         $('#tips').text('没有数据啦！！').show();
-            //     }
-            // }
-        })
-        // }
+        let totalPages
 
-        $('#pagination').twbsPagination({
-            totalPages: 9,
-            visiblePages: 6,
-            first: '首页',
-            prev: '上一页',
-            next: '下一页',
-            last: '尾页',
-            onPageClick: function (event, page) {}
+        function conNewList(pages, callback) {
+            $.get('http://localhost:8080/api/v1/index/search', {
+                type: text,
+                key: val,
+                page: pages,
+                perpage: perpage
+            }, function (res) {
+                // console.log(res);
+                totalPages = Math.ceil(res.data.totalCount / perpage)
+                let html = template('conNewList', res.data.data)
+                $('#witer').html(html);
+                if ((res.data.data.length != 0 && callback != null)) {
+                    $('#pagination').show();
+                    $('#tips').hide();
+                    callback(res);
+                } else if (res.data.data.length === 0) {
+                    if (mypage > 1) {
+                        $('#pagination').twbsPagination('changeTotalPages', res.data.totalPage, mypage -
+                            1)
+                    } else {
+                        $('#pagination').hide();
+                        $('#tips').text('没有数据啦！！').show();
+                    }
+                }
+            })
+        }
+        conNewList(mypage, function (res) {
+            $('#pagination').twbsPagination({
+                totalPages: totalPages,
+                visiblePages: 6,
+                first: '首页',
+                prev: '上一页',
+                next: '下一页',
+                last: '尾页',
+                onPageClick: function (event, page) {
+                    mypage = page
+                    conNewList(mypage, null)
+                }
+            })
         })
+
     })
 </script>
 
