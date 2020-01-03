@@ -24,7 +24,9 @@ app.use(express.static('static'))
 app.use(cors())
 
 // 中间件 - post数据解析
+// 配置Body-parser
 app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.json()) // 传递对象{}
 
 // 中间件 - 日志 最小模式输出
 app.use(morgan("tiny"))
